@@ -1,2 +1,7 @@
-.vscode/
-**build/
+build/
+*.exe
+*.pdb
+*.ilk
+*.obj
+__pycache__/
+.vs/

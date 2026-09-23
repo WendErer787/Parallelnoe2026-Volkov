@@ -1,14 +1,16 @@
 import numpy as np
 
+N = 2000   # размер
+
 def load(p):
     with open(p) as f:
-        n = int(f.readline())
-        return np.loadtxt(f)
+        f.readline()
+        return np.loadtxt(f, dtype=np.int64)
 
-A = load("data/A.txt")
-B = load("data/B.txt")
-C = load("data/C.txt")
+A = load(f"data/A{N}.txt")
+B = load(f"data/B{N}.txt")
+C = load(f"data/C{N}.txt")
 
-err = np.abs(C - A @ B).max()
-print(f"Макс. ошибка: {err:.3e}")
-print("OK" if err < 1e-6 else "ОШИБКА")
+diff = np.abs(C - A @ B).max()
+print(f"Макс. разница: {diff}")
+print("OK" if diff == 0 else "ОШИБКА")

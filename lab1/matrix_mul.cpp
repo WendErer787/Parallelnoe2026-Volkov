@@ -1,26 +1,24 @@
-#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <chrono>
 #include <filesystem>
 #include <string>
-#include <print>
+#include <iomanip>
 
+std::vector<std::vector<int>> readMatrix(const std::filesystem::path& filepath, int& n) {
 
-std::vector<std::vector<double>> readMatrix(const std::filesystem::path& filepath, int& n) {
-
-    std::vector<std::vector<double>> matrix;
+    std::vector<std::vector<int>> matrix;
 
     std::ifstream file(filepath);
 
     if (!file.is_open()) {
-        std::cout <<"Error open file";
+        std::cout << "Error open file: " << filepath << "\n";
         return matrix;
     }
 
     file >> n;
-    matrix.assign(n, std::vector<double>(n, 0.0));
+    matrix.assign(n, std::vector<int>(n, 0));
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
@@ -31,13 +29,12 @@ std::vector<std::vector<double>> readMatrix(const std::filesystem::path& filepat
 }
 
 void writeMatrix(const std::filesystem::path& filepath,
-                        const std::vector<std::vector<double>>& matrix) {
+                 const std::vector<std::vector<int>>& matrix) {
 
     std::ofstream file(filepath);
-        file << std::setprecision(15);
 
     if (!file.is_open()) {
-        std::cout <<"Error create file";
+        std::cout << "Error create file: " << filepath << "\n";
         return;
     }
 
@@ -53,16 +50,16 @@ void writeMatrix(const std::filesystem::path& filepath,
     }
 }
 
-std::vector<std::vector<double>> multiply(
-        const std::vector<std::vector<double>>& a,
-        const std::vector<std::vector<double>>& b) {
+std::vector<std::vector<int>> multiply(
+        const std::vector<std::vector<int>>& a,
+        const std::vector<std::vector<int>>& b) {
 
     const int n = static_cast<int>(a.size());
-    std::vector<std::vector<double>> c(n, std::vector<double>(n, 0.0));
+    std::vector<std::vector<int>> c(n, std::vector<int>(n, 0));
 
     for (int i = 0; i < n; ++i) {
         for (int k = 0; k < n; ++k) {
-            const double aik = a[i][k];
+            const int aik = a[i][k];
             const auto& brow = b[k];
             auto& crow = c[i];
             for (int j = 0; j < n; ++j) {
@@ -75,20 +72,23 @@ std::vector<std::vector<double>> multiply(
 
 int main() {
 
+    const std::string s = "2000";   // размер матрицы, меняется вручную
+
     int n = 0;
 
-    auto a = readMatrix("data/A.txt", n);
-    auto b = readMatrix("data/B.txt", n);
+    auto a = readMatrix("data/A" + s + ".txt", n);
+    auto b = readMatrix("data/B" + s + ".txt", n);
 
     if (a.size() != b.size() || a.empty() || b.empty()) {
-        std::cout <<"Size matrix don't saim or not-create\n";
+        std::cout << "Size matrix don't saim or not-create\n";
         return 1;
     }
+
     const auto start = std::chrono::high_resolution_clock::now();
     auto c = multiply(a, b);
     const auto end = std::chrono::high_resolution_clock::now();
 
-    writeMatrix("data/C.txt", c);
+    writeMatrix("data/C" + s + ".txt", c);
 
     const double ms =
         std::chrono::duration<double, std::milli>(end - start).count();
